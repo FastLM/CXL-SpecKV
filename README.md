@@ -26,7 +26,7 @@ CXL-SpecKV/
 ├── host/                    # User-space (C++ driver, allocator, C API, Python)
 ├── src/                     # Core components (memory manager, prefetcher, FPGA engine)
 ├── hardware/                # FPGA RTL designs
-└── examples/                # Examples and tests
+└── tests/                   # Functional tests (DMA, prefetch, allocator, C API)
 
 ```
 
@@ -63,17 +63,23 @@ This creates:
 
 ## Usage
 
-### Quick Test
+### Run Tests
 
 ```bash
-# Test kernel driver
-cd examples
-gcc test_speckv.c -o test_speckv
-sudo ./test_speckv
+# Build all tests
+cd tests
+make
 
-# Test C API
-cd build
-./cxlspeckv_demo
+# Run individual tests
+sudo ./test_dma          # Test DMA operations
+sudo ./test_prefetch     # Test prefetch functionality
+sudo ./test_params       # Test parameter configuration
+sudo ./test_c_api        # Test C API
+sudo ./test_allocator    # Test memory allocator
+python3 test_python.py   # Test Python integration
+
+# Run all tests
+make test
 ```
 
 ### Python Integration

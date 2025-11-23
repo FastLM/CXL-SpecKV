@@ -132,44 +132,6 @@ This installs:
 - Headers: `include/cxlspeckv/`
 - Python module: `python/cxlspeckv_py.so` (if built)
 
-## Troubleshooting
-
-### Kernel Module Issues
-
-**Module won't load:**
-- Check kernel logs: `dmesg | tail`
-- Ensure kernel headers match running kernel
-- Check for conflicting modules
-
-**Permission denied:**
-- Ensure user is in appropriate group or use `sudo`
-- Check device permissions: `ls -l /dev/speckv0`
-- Set permissions: `sudo chmod 666 /dev/speckv0`
-
-### User-space Build Issues
-
-**CUDA not found:**
-- Ensure CUDA is installed and `CUDA_PATH` is set
-- Or disable CUDA: `cmake -DUSE_CUDA=OFF ..`
-
-**Python bindings not building:**
-- Install pybind11: `pip install pybind11`
-- Or disable: `cmake -DBUILD_PYTHON_BINDINGS=OFF ..`
-
-**Library not found at runtime:**
-- Set LD_LIBRARY_PATH: `export LD_LIBRARY_PATH=$PWD/build:$LD_LIBRARY_PATH`
-
-### FPGA Build Issues
-
-**Quartus not found:**
-- Ensure Quartus Prime is installed and in PATH
-- Or use manual build process
-
-**Synthesis errors:**
-- Check RTL syntax: `vlog hardware/rtl/*.v`
-- Verify device family and part number
-- Check timing constraints
-
 ## Quick Start
 
 Complete build sequence:
