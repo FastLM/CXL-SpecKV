@@ -18,19 +18,15 @@ CXL-SpecKV consists of four main components:
 - **FPGA-Accelerated Compression**: 3-4× compression ratio with minimal accuracy loss
 - **High Performance**: 3.2× throughput improvement over GPU-only baselines
 
-## Project Structure
+## Project Core Files Structure
 
 ```
 CXL-SpecKV/
-├── src/
-│   ├── cxl_memory/          # CXL memory management
-│   ├── prefetcher/          # Speculative prefetching
-│   ├── fpga_engine/         # FPGA cache engine
-│   ├── integration/         # Framework integration
-│   └── utils/               # Utility functions
-├── tests/                   # Unit and integration tests
+├── driver/                  # Kernel driver (IOCTL interface)
+├── host/                    # User-space (C++ driver, allocator, C API, Python)
+├── src/                     # Core components (memory manager, prefetcher, FPGA engine)
 ├── hardware/                # FPGA RTL designs
-└── docs/                    # Documentation
+└── examples/                # Examples and tests
 
 ```
 
@@ -44,6 +40,16 @@ CXL-SpecKV/
 
 ## Installation
 
+### 1. Build Kernel Driver
+
+```bash
+cd driver
+make
+sudo insmod speckv_kernel_module.ko
+```
+
+### 2. Build User-space Library
+
 ```bash
 pip install -r requirements.txt
 mkdir build && cd build
@@ -51,9 +57,35 @@ cmake ..
 make -j$(nproc)
 ```
 
+This creates:
+- `libcxlspeckv.so`: Shared library
+- `cxlspeckv_demo`: Demo executable
+
 ## Usage
 
-See individual component documentation in `docs/` directory.
+### Quick Test
+
+```bash
+# Test kernel driver
+cd examples
+gcc test_speckv.c -o test_speckv
+sudo ./test_speckv
+
+# Test C API
+cd build
+./cxlspeckv_demo
+```
+
+### Python Integration
+
+```python
+from host.python.vllm_speckv_backend import CxlSpeckvKVAllocator
+
+allocator = CxlSpeckvKVAllocator(lib_path="./build/libcxlspeckv.so")
+handle = allocator.allocate(num_tokens=1024, num_layers=80, ...)
+```
+
+For detailed usage, see `docs/ARCHITECTURE.md` and `docs/BUILD.md`.
 
 ## Citation
 

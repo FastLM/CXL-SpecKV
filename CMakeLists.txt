@@ -12,8 +12,12 @@ find_package(CUDA REQUIRED)
 include_directories(${CMAKE_SOURCE_DIR}/src)
 include_directories(${CUDA_INCLUDE_DIRS})
 
-# Source files
-set(SOURCES
+# Include directories
+include_directories(${CMAKE_SOURCE_DIR}/host/include)
+include_directories(${CMAKE_SOURCE_DIR}/driver/uapi)
+
+# Source files (legacy components)
+set(LEGACY_SOURCES
     src/cxl_memory/cxl_memory_manager.cpp
     src/prefetcher/speculative_prefetcher.cpp
     src/prefetcher/lstm_predictor.cpp
@@ -22,6 +26,15 @@ set(SOURCES
     src/cxl_speckv_system.cpp
     src/utils/address_translation.cpp
 )
+
+# Host-side sources (new architecture)
+set(HOST_SOURCES
+    host/src/speckv_driver.cpp
+    host/src/speckv_allocator.cpp
+    host/src/speckv_c_api.cpp
+)
+
+set(SOURCES ${LEGACY_SOURCES} ${HOST_SOURCES})
 
 # Executable
 add_executable(cxlspeckv_demo src/main.cpp ${SOURCES})
