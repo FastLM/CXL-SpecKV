@@ -27,14 +27,20 @@ set(LEGACY_SOURCES
     src/utils/address_translation.cpp
 )
 
-# Host-side sources (new architecture)
+# Host-side sources
 set(HOST_SOURCES
     host/src/speckv_driver.cpp
     host/src/speckv_allocator.cpp
     host/src/speckv_c_api.cpp
 )
 
-set(SOURCES ${LEGACY_SOURCES} ${HOST_SOURCES})
+# Coherence manager sources
+set(COHERENCE_SOURCES
+    src/cxl_memory/coherence_manager.cpp
+    src/cxl_memory/coherence_c_api.cpp
+)
+
+set(SOURCES ${LEGACY_SOURCES} ${HOST_SOURCES} ${COHERENCE_SOURCES})
 
 # Executable
 add_executable(cxlspeckv_demo src/main.cpp ${SOURCES})
@@ -56,4 +62,17 @@ endif()
 # Install
 install(TARGETS cxlspeckv DESTINATION lib)
 install(DIRECTORY include/ DESTINATION include)
+
+# Tests (optional, enable with -DBUILD_TESTS=ON)
+option(BUILD_TESTS "Build unit tests" ON)
+if(BUILD_TESTS)
+    add_executable(test_coherence tests/test_coherence.cpp ${SOURCES})
+    target_link_libraries(test_coherence ${CUDA_LIBRARIES})
+    
+    add_executable(coherence_demo examples/example_coherence_demo.cpp ${SOURCES})
+    target_link_libraries(coherence_demo ${CUDA_LIBRARIES})
+    
+    enable_testing()
+    add_test(NAME CoherenceTest COMMAND test_coherence)
+endif()
 

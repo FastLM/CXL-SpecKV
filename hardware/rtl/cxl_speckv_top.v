@@ -12,15 +12,33 @@ module cxl_speckv_top (
     input  wire [63:0]                 mmio_wr_data,
     output reg  [63:0]                 mmio_rd_data,
     
-    // CXL.mem interface
-    // (Connect to CXL IP core)
+    // CXL.mem interface (to CXL memory pool)
+    output wire                        cxl_mem_req_valid,
+    input  wire                        cxl_mem_req_ready,
+    output wire                        cxl_mem_req_write,
+    output wire [63:0]                 cxl_mem_req_addr,
+    output wire [511:0]                cxl_mem_req_data,
+    input  wire                        cxl_mem_resp_valid,
+    output wire                        cxl_mem_resp_ready,
+    input  wire [511:0]                cxl_mem_resp_data,
     
-    // AXI interface to HBM
+    // CXL.cache coherence interface
+    output wire                        cxl_cache_inv_valid,
+    input  wire                        cxl_cache_inv_ready,
+    output wire [63:0]                 cxl_cache_inv_addr,
+    output wire [1:0]                  cxl_cache_inv_type,
+    input  wire                        cxl_cache_snoop_valid,
+    output wire                        cxl_cache_snoop_ready,
+    input  wire [63:0]                 cxl_cache_snoop_addr,
+    
+    // AXI interface to HBM (for DMA)
     // (Connect to HBM controller)
     
     // Status/control
     output wire [31:0]                 status_reg,
-    output wire [31:0]                 completion_count
+    output wire [31:0]                 completion_count,
+    output wire [31:0]                 coherence_dir_entries,
+    output wire [31:0]                 coherence_ops_count
 );
 
     // Instantiate components
@@ -201,6 +219,65 @@ module cxl_speckv_top (
         .dir_check_resp_ready(),
         .dir_check_hit(1'b0),
         .dir_check_tier(2'd0)
+    );
+    
+    // Coherence Directory (CXL Home Agent)
+    // This is the key module that acts as coherence manager
+    // - Receives GPU requests via PCIe/MMIO
+    // - Maintains directory of cached entries
+    // - Issues CXL.cache invalidations and CXL.mem operations
+    wire gpu_coherence_req_valid, gpu_coherence_req_ready;
+    wire gpu_coherence_req_write;
+    wire [63:0] gpu_coherence_req_addr;
+    wire [511:0] gpu_coherence_req_data;
+    wire [63:0] gpu_coherence_req_strb;
+    wire gpu_coherence_resp_valid, gpu_coherence_resp_ready;
+    wire [511:0] gpu_coherence_resp_data;
+    wire gpu_coherence_resp_error;
+    
+    coherence_directory #(
+        .ADDR_WIDTH(64),
+        .DATA_WIDTH(512),
+        .NUM_ENTRIES(4096),
+        .CACHE_LINE_SIZE(64),
+        .NUM_SHARERS(4)
+    ) u_coherence_dir (
+        .clk(clk),
+        .rst_n(rst_n),
+        // GPU request interface (from PCIe/MMIO)
+        .gpu_req_valid(gpu_coherence_req_valid),
+        .gpu_req_ready(gpu_coherence_req_ready),
+        .gpu_req_write(gpu_coherence_req_write),
+        .gpu_req_addr(gpu_coherence_req_addr),
+        .gpu_req_data(gpu_coherence_req_data),
+        .gpu_req_strb(gpu_coherence_req_strb),
+        .gpu_resp_valid(gpu_coherence_resp_valid),
+        .gpu_resp_ready(gpu_coherence_resp_ready),
+        .gpu_resp_data(gpu_coherence_resp_data),
+        .gpu_resp_error(gpu_coherence_resp_error),
+        // CXL.mem interface (to CXL memory pool)
+        .cxl_mem_req_valid(cxl_mem_req_valid),
+        .cxl_mem_req_ready(cxl_mem_req_ready),
+        .cxl_mem_req_write(cxl_mem_req_write),
+        .cxl_mem_req_addr(cxl_mem_req_addr),
+        .cxl_mem_req_data(cxl_mem_req_data),
+        .cxl_mem_resp_valid(cxl_mem_resp_valid),
+        .cxl_mem_resp_ready(cxl_mem_resp_ready),
+        .cxl_mem_resp_data(cxl_mem_resp_data),
+        // CXL.cache coherence interface
+        .cxl_cache_inv_valid(cxl_cache_inv_valid),
+        .cxl_cache_inv_ready(cxl_cache_inv_ready),
+        .cxl_cache_inv_addr(cxl_cache_inv_addr),
+        .cxl_cache_inv_type(cxl_cache_inv_type),
+        .cxl_cache_snoop_valid(cxl_cache_snoop_valid),
+        .cxl_cache_snoop_ready(cxl_cache_snoop_ready),
+        .cxl_cache_snoop_addr(cxl_cache_snoop_addr),
+        // Status
+        .dir_num_entries_used(coherence_dir_entries),
+        .dir_num_shared(),
+        .dir_num_exclusive(),
+        .dir_num_modified(),
+        .coherence_ops_count(coherence_ops_count)
     );
     
     // MMIO register interface

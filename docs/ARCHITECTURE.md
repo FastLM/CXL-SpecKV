@@ -99,8 +99,17 @@ Implements a three-tier memory hierarchy:
 - Demand-driven allocation policy
 - LRU replacement for L1 cache
 - Hot-cold page classification
-- Cache coherence protocol (CXL 2.0)
+- Cache coherence protocol (FPGA-managed, CXL 2.0 semantics)
 - Page migration between tiers
+
+**Coherence Model:**
+
+CXL-SpecKV implements a **device-mediated coherent shared memory model**:
+- The FPGA acts as the coherence manager and CXL home agent
+- GPU accesses KV-cache via PCIe; FPGA translates to CXL operations
+- Directory-based coherence maintained on FPGA
+- Provides CXL-consistent memory semantics without GPU protocol modifications
+- See `docs/COHERENCE_CLARIFICATION.md` for detailed explanation
 
 #### 2. Speculative Prefetcher (`src/prefetcher/`)
 

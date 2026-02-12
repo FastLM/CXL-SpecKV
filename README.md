@@ -93,6 +93,17 @@ handle = allocator.allocate(num_tokens=1024, num_layers=80, ...)
 
 For detailed usage, see `docs/ARCHITECTURE.md` and `docs/BUILD.md`.
 
+## Technical Documentation
+
+- **[ARCHITECTURE.md](docs/ARCHITECTURE.md)** - Complete system architecture and data flow
+- **[BUILD.md](docs/BUILD.md)** - Build instructions and dependencies
+
+<!-- ### Frequently Asked Questions -->
+
+<!-- **Q: Does the GPU directly support CXL protocols?**
+
+A: No. Current GPUs (e.g., NVIDIA A100) use PCIe to communicate with the FPGA. The FPGA acts as a CXL home agent and coherence manager, translating GPU requests into CXL operations. This provides coherent memory semantics without requiring GPU hardware modifications. See [COHERENCE_CLARIFICATION.md](docs/COHERENCE_CLARIFICATION.md) for details. -->
+
 ## Citation
 
 If you use this code in your research, please cite:

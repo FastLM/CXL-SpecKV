@@ -12,6 +12,7 @@ hardware/
 │   ├── kv_decompress.v    # Decompression pipeline
 │   ├── dma_engine.v       # DMA engine
 │   ├── cxl_mem_if.v       # CXL memory interface
+│   ├── coherence_directory.v  # Coherence directory controller
 │   ├── prefetch_core.v    # Prefetch core
 │   └── cxl_speckv_top.v   # Top-level module
 └── scripts/
@@ -60,7 +61,22 @@ Wrapper for CXL.mem and CXL.cache protocols:
 - Burst transfer support
 - Cache invalidation on writes
 
-### 6. Prefetch Core - `prefetch_core.v`
+### 6. Coherence Directory Controller - `coherence_directory.v`**
+
+**The core coherence controller that acts as CXL home agent:**
+
+- Directory-based coherence protocol (MESI: Invalid/Shared/Exclusive/Modified)
+- Receives GPU requests via PCIe/MMIO
+- Issues CXL.mem reads/writes to CXL memory pool
+- Sends CXL.cache invalidations to maintain coherence
+- Handles snoop requests from other CXL agents
+- 4096-entry directory (configurable)
+- Tracks up to 4 sharers per cache line
+- Statistics: directory hits, coherence ops, state counts
+
+this module makes the GPU ↔ FPGA ↔ CXL memory system coherent. The FPGA acts as the CXL home agent and coherence manager, translating PCIe requests from GPU into CXL-compliant operations.
+
+### 7. Prefetch Core - `prefetch_core.v`
 
 Implements Algorithm 1 from paper:
 - Receives prefetch requests from host
@@ -69,12 +85,15 @@ Implements Algorithm 1 from paper:
 - L1/L2 directory checking
 - DMA descriptor generation
 
-### 7. Top-Level Module - `cxl_speckv_top.v`
+### 8. Top-Level Module - `cxl_speckv_top.v`
 
 Integrates all components:
 - MMIO register interface
 - Component interconnection
+- Coherence directory controller integration
+- CXL.mem and CXL.cache interfaces
 - Status and completion tracking
+
 
 ## Build Instructions
 
@@ -154,4 +173,12 @@ vsim cxl_speckv_top
 - [ ] Multi-engine scaling
 - [ ] CXL 3.0 support
 - [ ] Performance counters
+- [ ] Multi-sharer tracking beyond 4 agents
+- [ ] Adaptive coherence policies based on workload
+
+## See Also
+
+- **[Coherence Implementation Guide](../src/cxl_memory/COHERENCE_IMPLEMENTATION.md)**: Detailed explanation of coherence protocol
+- **[Architecture Documentation](../docs/ARCHITECTURE.md)**: System overview
+- **[Coherence Clarification](../docs/COHERENCE_CLARIFICATION.md)**: Technical FAQ on coherence model
 
