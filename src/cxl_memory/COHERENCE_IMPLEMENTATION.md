@@ -306,10 +306,6 @@ A: No. The GPU uses PCIe to communicate with the FPGA. The FPGA acts as a CXL ho
 
 A: On the FPGA. The FPGA maintains the authoritative directory and issues all CXL.cache invalidations and CXL.mem operations.
 
-**Q: What if I have a CXL-native GPU in the future?**
-
-A: The system is forward-compatible. A CXL-native GPU could directly participate in CXL.cache, potentially bypassing the FPGA proxy for some operations.
-
 **Q: Is this a "real" coherent system?**
 
 A: Yes. We provide coherent memory semantics at the system level through device-mediated coherence. This is a standard technique in heterogeneous systems.
