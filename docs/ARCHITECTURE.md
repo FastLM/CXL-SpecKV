@@ -152,7 +152,7 @@ Implements compression/decompression pipeline:
 - `prefetch_core.v`: Prefetch coordination core
 - `cxl_speckv_top.v`: Top-level integration module
 
-## Data Flow
+<!-- ## Data Flow
 
 ### Prefetch Flow
 
@@ -245,7 +245,7 @@ From paper evaluation:
 - **Memory Expansion**: 8× capacity (24× with compression)
 - **Latency Overhead**: 8.2% per-token decode latency
 - **Accuracy**: 99.5% preservation
-- **Energy Efficiency**: 1.90× better J/token
+- **Energy Efficiency**: 1.90× better J/token -->
 
 ## Configuration
 
@@ -264,12 +264,12 @@ config.fpga_clock_mhz = 800.0;  // FPGA clock frequency
 
 See `src/main.cpp` and `examples/simple_example.cpp` for usage examples.
 
-## Future Work
+<!-- ## Future Work -->
 
-As mentioned in the paper:
+<!-- 
 - Dynamic activation sparsity in attention
 - Multi-tenant workload management
 - Adaptation for 32K-128K context windows
 - Extension to fine-tuning/training
 - CXL 3.0 support (128GB/s bandwidth)
-- Heterogeneous memory tiers
+- Heterogeneous memory tiers -->
