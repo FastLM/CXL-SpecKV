@@ -262,7 +262,7 @@ config.fpga_clock_mhz = 800.0;  // FPGA clock frequency
 
 ## Usage Example
 
-See `src/main.cpp` and `examples/simple_example.cpp` for usage examples.
+See `src/main.cpp`.
 
 <!-- ## Future Work -->
 
