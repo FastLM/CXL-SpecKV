@@ -120,7 +120,7 @@ Predicts future token sequences using a lightweight LSTM model:
 - **Prediction Latency**: <10μs
 - **Accuracy**: 95% top-4 accuracy
 
-**Algorithm** (from paper Algorithm 1):
+**Algorithm** (Algorithm 1):
 1. Predict next k tokens using LSTM
 2. Compute KV-cache addresses for predicted tokens
 3. Issue non-blocking DMA prefetches
@@ -239,7 +239,7 @@ for layer in range(num_layers):
 
 ## Performance Characteristics
 
-From paper evaluation:
+evaluation:
 
 - **Throughput**: 3.2× improvement over GPU-only baseline
 - **Memory Expansion**: 8× capacity (24× with compression)
