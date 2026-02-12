@@ -165,7 +165,7 @@ vsim cxl_speckv_top
 3. Run user-space tests
 4. Monitor MMIO registers
 
-## Future Enhancements
+<!-- ## Future Enhancements
 
 - [ ] Complete RLE implementation
 - [ ] Full FP16 arithmetic units
@@ -174,11 +174,10 @@ vsim cxl_speckv_top
 - [ ] CXL 3.0 support
 - [ ] Performance counters
 - [ ] Multi-sharer tracking beyond 4 agents
-- [ ] Adaptive coherence policies based on workload
+- [ ] Adaptive coherence policies based on workload -->
 
 ## See Also
 
 - **[Coherence Implementation Guide](../src/cxl_memory/COHERENCE_IMPLEMENTATION.md)**: Detailed explanation of coherence protocol
 - **[Architecture Documentation](../docs/ARCHITECTURE.md)**: System overview
-- **[Coherence Clarification](../docs/COHERENCE_CLARIFICATION.md)**: Technical FAQ on coherence model
 
